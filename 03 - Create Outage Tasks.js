@@ -9,16 +9,16 @@
 //Triggering Fields:  outage_status
 //Error Code:  5
 //Error Message:  Couldn't create outage Tasks records
-//Evaluate from application evaluation:  checked (true)
+//Exclude from application evaluation:  checked (true)
 
 //The data type of Domain, Outage Status, is text.  When comparing values, the domain codes must be in quotes.
-var active = "1";  
+//var active = "1";  
 
 //if outage status changed to Active, then create outage tasks records for all meters within the polygon extent.
-if ($feature.outage_status == active && $originalfeature.outage_status != active )
-{  
+//if ($feature.outage_status == active && $originalfeature.outage_status != active )
+//{  
     var addsList = [];
-    var pipelineLineFS = FeatureSetByName($datastore, "main.PipelineDevice", ['OBJECTID'], true);
+    var pipelineLineFS = FeatureSetByName($datastore, "main.Pipeline_Device", ['OBJECTID'], true);
     var meterSubtypeCode = 2;  // Subtype value From GasDevice layer
 
     // FilterBySubtypeCode method is relatively new.  Be careful where this is used as not all apps (ex. Field Maps) recognize it yet.
@@ -54,7 +54,7 @@ if ($feature.outage_status == active && $originalfeature.outage_status != active
     else {  // no features to create.  Exit gracefully
         return;
     }
-}
-else { //status criteria not met.  Exit gracefully
-    return;
-}
+//}
+//else { //status criteria not met.  Exit gracefully
+//    return;
+//}

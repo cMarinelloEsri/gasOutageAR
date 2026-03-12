@@ -1,6 +1,6 @@
 //Database Object:  OutageTasks
 //Rule Type:  Immediate Calculation
-//Rule Name:  Update Outage Polygon Status once all tasks are completed
+//Rule Name:  Polygon Outage Status Update
 //Description: Set Outage Polygon Status to Resolved once all assigned tasks are completed
 //Subtype:  All
 //Field:  none
@@ -9,7 +9,7 @@
 //Triggering Fields:  esritask_status
 //Error Code:  17
 //Error Message:  Couldn't close out outage polygon
-//Evaluate from application evaluation:  checked (true)
+//Exclude from application evaluation:  checked (true)
 
 var completed = 4;
 if ($feature.esritask_status != completed) {  // exit gracefully if task status isn't completed.
@@ -21,7 +21,7 @@ var taskGlobalid = $feature.globalid;
 
 //Query the Task Layer for records assigned to the current Outage name and whose status isn't Completed.
 //  Don't query the record that is currently being edited.
-var tasksFS = FeatureSetByName($datastore, 'main.OutageTasks', ['objectid'], false);
+var tasksFS = FeatureSetByName($datastore, 'main.OutageTasks', ['objectid', 'outage_number', 'esritask_status', 'globalid'], false);
 var taskRec = First(Filter(tasksFS, `outage_number = @outageNumber and globalid <> @taskGlobalid and esritask_status <> @completed`)); 
 if (taskRec == null)
 {

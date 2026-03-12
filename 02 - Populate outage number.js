@@ -8,6 +8,6 @@
 //Trigger:  Insert
 //Error Code:  2
 //Error Message:  Couldn't get next outage id sequence
-//Evaluate from application evaluation:  checked (true)
+//Exclude from application evaluation:  checked (true)
 
 return NextSequenceValue('outage_id_seq');
