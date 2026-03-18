@@ -36,7 +36,8 @@ if (taskRec == null)
                 'updates' : [{ 
                     'globalid' : outageFeature.globalid,
                     'attributes' : { 
-                        'outage_status' : "3" //  Domain, Outage Status: 3 = resolved, 
+                        'outage_status' : "3", //  Domain, Outage Status: 3 = resolved, 
+                        'outage_resolved_time': Now()       // Current execution time
                     } 
                 }]
             }]
