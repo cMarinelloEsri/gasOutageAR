@@ -12,12 +12,32 @@
 //Exclude from application evaluation:  checked (true)
 
 var completed = 4;
-if ($feature.esritask_status != completed) {  // exit gracefully if task status isn't completed.
-    return;
-}
-
 var outageNumber = $feature.outage_number;
 var taskGlobalid = $feature.globalid;
+
+// Check if task is NOT completed (rolled back to incomplete status)
+if ($feature.esritask_status != completed) {
+    // Task has been rolled back - check if polygon needs to be reverted
+    var outagePolygonFS = FeatureSetByRelationshipClass($feature, 'main.OutagePolygons_OutageTasks', ['globalid', 'outage_status'], false);
+    var outageFeature = First(outagePolygonFS);
+    
+    if (outageFeature != null && outageFeature.outage_status == "3") {
+        // Polygon is currently resolved - roll it back to open status
+        return {
+            'edit': [{
+                'className': 'main.OutagePolygons',
+                'updates': [{
+                    'globalid': outageFeature.globalid,
+                    'attributes': {
+                        'outage_status': "0",  // Roll back to open status
+                        'outage_resolved_time': null  // Clear the resolved time
+                    }
+                }]
+            }]
+        };
+    }
+    return;  // Exit - polygon isn't resolved or task wasn't completed
+}
 
 //Query the Task Layer for records assigned to the current Outage name and whose status isn't Completed.
 //  Don't query the record that is currently being edited.
