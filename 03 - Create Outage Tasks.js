@@ -18,12 +18,25 @@
 //if ($feature.outage_status == active && $originalfeature.outage_status != active )
 //{  
     var addsList = [];
-    var pipelineLineFS = FeatureSetByName($datastore, "main.Pipeline_Device", ['OBJECTID'], true);
+    var pipelineLineFS = FeatureSetByName($datastore, "main.Pipeline_Device", ['OBJECTID', 'assetid'], true);
     var meterSubtypeCode = 2;  // Subtype value From GasDevice layer
 
     // FilterBySubtypeCode method is relatively new.  Be careful where this is used as not all apps (ex. Field Maps) recognize it yet.
     var intersectedFeatures = FilterBySubtypeCode(Intersects(pipelineLineFS, $feature), meterSubtypeCode);
+    
+    // Query local customer data
+    var customerFS = FeatureSetByName($datastore, "main.CustomerData", ['assetid', 'name', 'address', 'number_'], false);
+    
     for (var feat in intersectedFeatures) {
+        var meterAssetId = feat.assetid;
+        
+        // Look up customer data by asset ID
+        var lookupRecord = First(Filter(customerFS, `assetid = @meterAssetId`));
+        
+        // Skip if customer record not found
+        if (lookupRecord == null) {
+            continue;
+        }
 
         var inspectionDetails = {
             'attributes': {
@@ -33,7 +46,10 @@
                 'outage_number' : $feature.outage_number,
                 'outage_level' :  $feature.outage_level,
                 'relight_time' : 15, // minutes
-                'guid' : $feature.globalid
+                'guid' : $feature.globalid,
+                'customer_name': lookupRecord.name,
+                'address': lookupRecord.address,
+                'customer_number': lookupRecord.number_
             },
             'geometry': Geometry(feat)  // geometry of the Meter
         }; 
